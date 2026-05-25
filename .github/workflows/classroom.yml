@@ -1,0 +1,132 @@
+name: Autograde Data Visualisation
+
+on: [push, workflow_dispatch]
+
+jobs:
+  grade:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      contents: read
+      statuses: write
+      checks: write
+
+    steps:
+      - name: Checkout student submission
+        uses: actions/checkout@v4
+
+      - name: Checkout hidden tests
+        uses: actions/checkout@v4
+        with:
+          repository: sst-cs/dst-assignment-3-tests
+          token: ${{ secrets.HIDDEN_TESTS_TOKEN }}
+          path: hidden-tests
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+          pip install -r requirements.txt
+
+      - name: Task 1 – Data Loading
+        id: task1_data
+        uses: education/autograding-command-grader@v1
+        continue-on-error: true
+        with:
+          test-name: 'task1_data'
+          command: 'pytest hidden-tests/tests/test_assignment.py -k "df or summary"'
+          timeout: 30
+          max-score: 2
+
+      - name: Task 2 – Histogram (fig1)
+        id: task2_fig1
+        uses: education/autograding-command-grader@v1
+        continue-on-error: true
+        with:
+          test-name: 'task2_fig1'
+          command: 'pytest hidden-tests/tests/test_assignment.py -k "fig1"'
+          timeout: 30
+          max-score: 2
+
+      - name: Task 3 – Bar Chart (fig2)
+        id: task3_fig2
+        uses: education/autograding-command-grader@v1
+        continue-on-error: true
+        with:
+          test-name: 'task3_fig2'
+          command: 'pytest hidden-tests/tests/test_assignment.py -k "fig2"'
+          timeout: 30
+          max-score: 1
+
+      - name: Task 4 – Scatter Plot (fig3)
+        id: task4_fig3
+        uses: education/autograding-command-grader@v1
+        continue-on-error: true
+        with:
+          test-name: 'task4_fig3'
+          command: 'pytest hidden-tests/tests/test_assignment.py -k "fig3"'
+          timeout: 30
+          max-score: 1
+
+      - name: Task 5 – Line Plot (fig4)
+        id: task5_fig4
+        uses: education/autograding-command-grader@v1
+        continue-on-error: true
+        with:
+          test-name: 'task5_fig4'
+          command: 'pytest hidden-tests/tests/test_assignment.py -k "fig4"'
+          timeout: 30
+          max-score: 1
+
+      - name: Task 6 – Heatmap (fig5)
+        id: task6_fig5
+        uses: education/autograding-command-grader@v1
+        continue-on-error: true
+        with:
+          test-name: 'task6_fig5'
+          command: 'pytest hidden-tests/tests/test_assignment.py -k "fig5"'
+          timeout: 30
+          max-score: 1
+
+      - name: Task 7 – Top 10 Movies
+        id: task7_top
+        uses: education/autograding-command-grader@v1
+        continue-on-error: true
+        with:
+          test-name: 'task7_top'
+          command: 'pytest hidden-tests/tests/test_assignment.py -k "top"'
+          timeout: 30
+          max-score: 2
+
+      - name: Package Results
+        id: package
+        run: |
+          DATA=$(echo "${{steps.task1_data.outputs.result}}"  | base64 -d 2>/dev/null | jq '.tests[0].score // .score // 0')
+          FIG1=$(echo "${{steps.task2_fig1.outputs.result}}"  | base64 -d 2>/dev/null | jq '.tests[0].score // .score // 0')
+          FIG2=$(echo "${{steps.task3_fig2.outputs.result}}"  | base64 -d 2>/dev/null | jq '.tests[0].score // .score // 0')
+          FIG3=$(echo "${{steps.task4_fig3.outputs.result}}"  | base64 -d 2>/dev/null | jq '.tests[0].score // .score // 0')
+          FIG4=$(echo "${{steps.task5_fig4.outputs.result}}"  | base64 -d 2>/dev/null | jq '.tests[0].score // .score // 0')
+          FIG5=$(echo "${{steps.task6_fig5.outputs.result}}"  | base64 -d 2>/dev/null | jq '.tests[0].score // .score // 0')
+          TOP=$(echo "${{steps.task7_top.outputs.result}}"    | base64 -d 2>/dev/null | jq '.tests[0].score // .score // 0')
+
+          TOTAL=$((DATA + FIG1 + FIG2 + FIG3 + FIG4 + FIG5 + TOP))
+          echo "Calculated Total Score: $TOTAL / 10"
+
+          for i in $(seq 1 10); do
+            STATUS="fail"; SCORE=0
+            if [ $i -le $TOTAL ]; then STATUS="pass"; SCORE=1; fi
+            JSON="{\"version\":1,\"status\":\"$STATUS\",\"max_score\":1,\"tests\":[{\"name\":\"Requirement $i\",\"status\":\"$STATUS\",\"score\":$SCORE,\"max_score\":1}]}"
+            B64=$(echo -n "$JSON" | base64 -w 0)
+            echo "R${i}_RESULTS=$B64" >> $GITHUB_ENV
+          done
+
+      - name: Autograding Reporter
+        uses: education/autograding-grading-reporter@v1
+        continue-on-error: true
+        with:
+          runners: r1,r2,r3,r4,r5,r6,r7,r8,r9,r10
