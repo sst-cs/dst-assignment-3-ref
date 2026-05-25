@@ -39,82 +39,82 @@ jobs:
         continue-on-error: true
         with:
           test-name: 'task1_data'
-          command: 'pytest hidden-tests/tests/test_assignment.py -k "df or summary"'
+          command: 'pytest hidden-tests/tests/test_assignment.py -k "df_loaded or df_shape_var or summary_stats"'
+          timeout: 30
+          max-score: 1
+
+      - name: Task 2 – Data Cleaning
+        id: task2_cleaning
+        uses: education/autograding-command-grader@v1
+        continue-on-error: true
+        with:
+          test-name: 'task2_cleaning'
+          command: 'pytest hidden-tests/tests/test_assignment.py -k "clean"'
           timeout: 30
           max-score: 2
 
-      - name: Task 2 – Histogram (fig1)
-        id: task2_fig1
+      - name: Task 3 – Feature Engineering
+        id: task3_features
         uses: education/autograding-command-grader@v1
         continue-on-error: true
         with:
-          test-name: 'task2_fig1'
-          command: 'pytest hidden-tests/tests/test_assignment.py -k "fig1"'
+          test-name: 'task3_features'
+          command: 'pytest hidden-tests/tests/test_assignment.py -k "decade or genre_stats or top_genres"'
           timeout: 30
           max-score: 2
 
-      - name: Task 3 – Bar Chart (fig2)
-        id: task3_fig2
+      - name: Task 4 – Top 10 Movies
+        id: task4_top
         uses: education/autograding-command-grader@v1
         continue-on-error: true
         with:
-          test-name: 'task3_fig2'
-          command: 'pytest hidden-tests/tests/test_assignment.py -k "fig2"'
+          test-name: 'task4_top'
+          command: 'pytest hidden-tests/tests/test_assignment.py -k "top_movies"'
           timeout: 30
           max-score: 1
 
-      - name: Task 4 – Scatter Plot (fig3)
-        id: task4_fig3
+      - name: Tasks 5-7 – Basic Visualisations (fig1, fig2, fig3)
+        id: task5_figs_basic
         uses: education/autograding-command-grader@v1
         continue-on-error: true
         with:
-          test-name: 'task4_fig3'
-          command: 'pytest hidden-tests/tests/test_assignment.py -k "fig3"'
-          timeout: 30
+          test-name: 'task5_figs_basic'
+          command: 'pytest hidden-tests/tests/test_assignment.py -k "fig1 or fig2 or fig3"'
+          timeout: 60
           max-score: 1
 
-      - name: Task 5 – Line Plot (fig4)
-        id: task5_fig4
+      - name: Tasks 8-9 – Analysis Visualisations (fig4, fig5)
+        id: task6_figs_mid
         uses: education/autograding-command-grader@v1
         continue-on-error: true
         with:
-          test-name: 'task5_fig4'
-          command: 'pytest hidden-tests/tests/test_assignment.py -k "fig4"'
-          timeout: 30
+          test-name: 'task6_figs_mid'
+          command: 'pytest hidden-tests/tests/test_assignment.py -k "fig4 or fig5"'
+          timeout: 60
           max-score: 1
 
-      - name: Task 6 – Heatmap (fig5)
-        id: task6_fig5
+      - name: Tasks 10-12 – Advanced Visualisations (fig6, fig7, fig8)
+        id: task7_figs_adv
         uses: education/autograding-command-grader@v1
         continue-on-error: true
         with:
-          test-name: 'task6_fig5'
-          command: 'pytest hidden-tests/tests/test_assignment.py -k "fig5"'
-          timeout: 30
-          max-score: 1
-
-      - name: Task 7 – Top 10 Movies
-        id: task7_top
-        uses: education/autograding-command-grader@v1
-        continue-on-error: true
-        with:
-          test-name: 'task7_top'
-          command: 'pytest hidden-tests/tests/test_assignment.py -k "top"'
-          timeout: 30
+          test-name: 'task7_figs_adv'
+          command: 'pytest hidden-tests/tests/test_assignment.py -k "fig6 or fig7 or fig8"'
+          timeout: 90
           max-score: 2
 
       - name: Package Results
         id: package
         run: |
-          DATA=$(echo "${{steps.task1_data.outputs.result}}"  | base64 -d 2>/dev/null | jq '.tests[0].score // .score // 0')
-          FIG1=$(echo "${{steps.task2_fig1.outputs.result}}"  | base64 -d 2>/dev/null | jq '.tests[0].score // .score // 0')
-          FIG2=$(echo "${{steps.task3_fig2.outputs.result}}"  | base64 -d 2>/dev/null | jq '.tests[0].score // .score // 0')
-          FIG3=$(echo "${{steps.task4_fig3.outputs.result}}"  | base64 -d 2>/dev/null | jq '.tests[0].score // .score // 0')
-          FIG4=$(echo "${{steps.task5_fig4.outputs.result}}"  | base64 -d 2>/dev/null | jq '.tests[0].score // .score // 0')
-          FIG5=$(echo "${{steps.task6_fig5.outputs.result}}"  | base64 -d 2>/dev/null | jq '.tests[0].score // .score // 0')
-          TOP=$(echo "${{steps.task7_top.outputs.result}}"    | base64 -d 2>/dev/null | jq '.tests[0].score // .score // 0')
+          DATA=$(echo "${{steps.task1_data.outputs.result}}"       | base64 -d 2>/dev/null | jq '.tests[0].score // .score // 0')
+          CLEAN=$(echo "${{steps.task2_cleaning.outputs.result}}"  | base64 -d 2>/dev/null | jq '.tests[0].score // .score // 0')
+          FEAT=$(echo "${{steps.task3_features.outputs.result}}"   | base64 -d 2>/dev/null | jq '.tests[0].score // .score // 0')
+          TOP=$(echo "${{steps.task4_top.outputs.result}}"         | base64 -d 2>/dev/null | jq '.tests[0].score // .score // 0')
+          BASIC=$(echo "${{steps.task5_figs_basic.outputs.result}}"| base64 -d 2>/dev/null | jq '.tests[0].score // .score // 0')
+          MID=$(echo "${{steps.task6_figs_mid.outputs.result}}"    | base64 -d 2>/dev/null | jq '.tests[0].score // .score // 0')
+          ADV=$(echo "${{steps.task7_figs_adv.outputs.result}}"    | base64 -d 2>/dev/null | jq '.tests[0].score // .score // 0')
 
-          TOTAL=$((DATA + FIG1 + FIG2 + FIG3 + FIG4 + FIG5 + TOP))
+          TOTAL=$((DATA + CLEAN + FEAT + TOP + BASIC + MID + ADV))
           echo "Calculated Total Score: $TOTAL / 10"
 
           for i in $(seq 1 10); do
