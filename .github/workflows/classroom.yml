@@ -46,7 +46,7 @@ jobs:
 
       - name: Task 1 – Data Loading
         id: task1_data
-        uses: education/autograding-command-grader@v1
+        uses: classroom-resources/autograding-command-grader@v1
         continue-on-error: true
         with:
           test-name: 'task1_data'
@@ -56,7 +56,7 @@ jobs:
 
       - name: Task 2 – Data Cleaning
         id: task2_cleaning
-        uses: education/autograding-command-grader@v1
+        uses: classroom-resources/autograding-command-grader@v1
         continue-on-error: true
         with:
           test-name: 'task2_cleaning'
@@ -66,7 +66,7 @@ jobs:
 
       - name: Task 3 – Feature Engineering
         id: task3_features
-        uses: education/autograding-command-grader@v1
+        uses: classroom-resources/autograding-command-grader@v1
         continue-on-error: true
         with:
           test-name: 'task3_features'
@@ -76,7 +76,7 @@ jobs:
 
       - name: Task 4 – Top 10 Movies
         id: task4_top
-        uses: education/autograding-command-grader@v1
+        uses: classroom-resources/autograding-command-grader@v1
         continue-on-error: true
         with:
           test-name: 'task4_top'
@@ -86,7 +86,7 @@ jobs:
 
       - name: Tasks 5-7 – Basic Visualisations (fig1, fig2, fig3)
         id: task5_figs_basic
-        uses: education/autograding-command-grader@v1
+        uses: classroom-resources/autograding-command-grader@v1
         continue-on-error: true
         with:
           test-name: 'task5_figs_basic'
@@ -96,7 +96,7 @@ jobs:
 
       - name: Tasks 8-9 – Analysis Visualisations (fig4, fig5)
         id: task6_figs_mid
-        uses: education/autograding-command-grader@v1
+        uses: classroom-resources/autograding-command-grader@v1
         continue-on-error: true
         with:
           test-name: 'task6_figs_mid'
@@ -106,7 +106,7 @@ jobs:
 
       - name: Tasks 10-12 – Advanced Visualisations (fig6, fig7, fig8)
         id: task7_figs_adv
-        uses: education/autograding-command-grader@v1
+        uses: classroom-resources/autograding-command-grader@v1
         continue-on-error: true
         with:
           test-name: 'task7_figs_adv'
@@ -157,7 +157,7 @@ jobs:
           done
 
       - name: Autograding Reporter
-        uses: education/autograding-grading-reporter@v1
+        uses: classroom-resources/autograding-grading-reporter@v1
         continue-on-error: true
         with:
           runners: r1,r2,r3,r4,r5,r6,r7,r8,r9,r10
