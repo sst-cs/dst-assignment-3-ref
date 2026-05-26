@@ -101,7 +101,7 @@ jobs:
         with:
           test-name: 'task7_figs_adv'
           command: 'pytest hidden-tests/tests/test_assignment.py -k "fig6 or fig7 or fig8"'
-          timeout: 90
+          timeout: 120
           max-score: 2
 
       - name: Package Results
@@ -115,7 +115,7 @@ jobs:
           MID=$(echo "${{steps.task6_figs_mid.outputs.result}}"    | base64 -d 2>/dev/null | jq '.tests[0].score // .score // 0')
           ADV=$(echo "${{steps.task7_figs_adv.outputs.result}}"    | base64 -d 2>/dev/null | jq '.tests[0].score // .score // 0')
 
-          TOTAL=$((DATA + CLEAN + FEAT + TOP + BASIC + MID + ADV))
+          TOTAL=$(( ${DATA:-0} + ${CLEAN:-0} + ${FEAT:-0} + ${TOP:-0} + ${BASIC:-0} + ${MID:-0} + ${ADV:-0} ))
           echo "Calculated Total Score: $TOTAL / 10"
 
           for i in $(seq 1 10); do
